@@ -1,0 +1,93 @@
+function Tiling(img, x, y, w, h){
+	this.image = img;
+	this.pos = createVector(x, y);
+	this.width = w;
+	this.height = h;
+	this.area_threshold = 5;
+	this.breadth_threshold = 20;
+	this.display_mode = 1;
+
+	var d = pixelDensity();
+	this.graphic = createGraphics(this.width, this.height);
+
+	// Start with one rectangular shape with the same dimensions and position as the image to tile
+	var v1 = createVector(0, 0);
+	var v2 = createVector(this.width, 0);
+	var v3 = createVector(this.width, this.height);
+	var v4 = createVector(0, this.height);
+	this.shapes = [new p5Shape([v1, v2, v3, v4], this.graphic)];
+
+	this.show = function(){
+		resetMatrix();
+		imageMode(CENTER);
+		var h = windowHeight * 0.8;
+		var w = h * (img.width / img.height);
+		image(this.graphic, this.pos.x, this.pos.y, w, h);
+	}
+
+	this.tilize = function(){
+		var divisions;
+		var fail_counter = 0;
+		var dir = 0;
+		while (fail_counter < 3){
+			divisions = this.subdivide(dir);
+			dir = (dir + 1) % 2;
+			if (divisions > 3)
+				fail_counter = 0;
+			else
+				fail_counter++;
+		}
+		this.setColors();
+		this.refresh();
+	}
+
+	this.subdivide = function(dir){
+		var divisions = 0;
+		for (var i = this.shapes.length - 1; i >= 0; i--){
+			// If the shape can be divided in three and still be above the threshold
+			if (this.shapes[i].area() / 3 > this.area_threshold){
+				// Subdivide the shape
+				var new_shapes = this.shapes[i].subdivide(dir);
+				// If both subdivided halves are above the threshold, replace the shape with them
+				if (new_shapes[0].area() >= this.area_threshold && new_shapes[1].area() >= this.area_threshold && new_shapes[0].wellProportioned() && new_shapes[1].wellProportioned()){
+					// new_shapes[0].breadth() >= this.breadth_threshold && new_shapes[1].breadth() >= this.breadth_threshold){
+					this.shapes.splice(i, 1);
+					this.shapes = splice(this.shapes, new_shapes, i);
+					divisions++;
+				}
+				// Otherwise try again
+				else{
+					// Subdivide the shape
+					var new_shapes = this.shapes[i].subdivide(dir);
+					// If both subdivided halves are above the threshold, replace the shape with them
+					if (new_shapes[0].area() >= this.area_threshold && new_shapes[1].area() >= this.area_threshold && new_shapes[0].wellProportioned() && new_shapes[1].wellProportioned()){
+						// new_shapes[0].breadth() >= this.breadth_threshold && new_shapes[1].breadth() >= this.breadth_threshold){
+						this.shapes.splice(i, 1);
+						this.shapes = splice(this.shapes, new_shapes, i);
+						divisions++;
+					}
+				}
+			}
+		}
+		return divisions;
+	}
+
+	this.refresh = function(){
+		this.graphic.clear();
+		for (var i = 0; i < this.shapes.length; i++)
+			this.shapes[i].show(this.display_mode);
+	}
+
+	this.setColors = function(){
+		for (var i = 0; i < this.shapes.length; i++){
+			this.shapes[i].setFill();
+		}
+		this.refresh();
+	}
+
+	this.toggleDisplayMode = function(){
+		this.display_mode = (this.display_mode + 1) % 2;
+		this.refresh();
+	}
+
+}
