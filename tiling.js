@@ -8,6 +8,8 @@ function Tiling(x, y){
 	this.area_threshold;
 	this.graphic;
 	this.shapes;
+	this.workers = [];
+	this.chunks = [];
 
 	this.show = function(){
 		slides[2].resetMatrix();
@@ -24,8 +26,15 @@ function Tiling(x, y){
 	this.initialize = function(){
 		this.width = this.image.width;
 		this.height = this.image.height;
-		this.area_threshold = this.image.width * this.image.height / 10000;
+		this.area_threshold = this.image.width * this.image.height / 15000;
 		this.graphic = createGraphics(this.width, this.height);
+
+		for (var i = 0; i < navigator.hardwareConcurrency; i++){
+			this.workers[i] = new Worker('c0l0rworker.js');
+			this.workers[i].addEventListener('message', function(e){
+				tiling.sectionColored(e.data.work, e.data.chunk);
+			}, false);
+		}
 
 		// Start with one rectangular shape with the same dimensions and position as the image to tile
 		var v1 = createVector(0, 0);
@@ -51,8 +60,6 @@ function Tiling(x, y){
 		}
 		// print(this.shapes.length);
 		this.setColors();
-		this.tilized = true;
-
 	}
 
 	this.subdivide = function(dir){
@@ -93,9 +100,54 @@ function Tiling(x, y){
 	}
 
 	this.setColors = function(){
-		for (var i = 0; i < this.shapes.length; i++){
-			this.shapes[i].setFill();
+		var img_pixels = [];
+		this.image.loadPixels();
+		for (var i = 0; i < this.image.pixels.length; i++)
+			img_pixels[i] = this.image.pixels[i];
+
+		var centroids = [];
+		for (var i = 0; i < this.shapes.length; i++)
+			centroids[i] = [this.shapes[i].centroid.x, this.shapes[i].centroid.y];
+
+		var start, stop;
+		for (var i = 0; i < this.workers.length; i++){
+			start = i * floor(this.shapes.length / this.workers.length);
+			stop = (i == this.workers.length - 1) ? this.shapes.length : (i + 1) * floor(this.shapes.length / this.workers.length);
+			// print(start + ', ' + stop)
+			var w = this.image.width;
+			var h = this.image.height;
+			this.workers[i].postMessage({
+				pixels: img_pixels,
+				start: start,
+				stop: stop,
+				colors: colors,
+				width: w,
+				height: h,
+				chunk: i,
+				centroids: centroids
+			});
 		}
+	}
+
+	this.sectionColored = function(colors, chunk){
+		this.chunks[chunk] = colors;
+		this.doneColoring();
+	}
+
+	this.doneColoring = function(){
+		for (var i = 0; i < this.workers.length; i++)
+			if (typeof(this.chunks[i]) == 'undefined')
+				return false;
+
+		var shape_idx = 0;
+		for (var i = 0; i < this.chunks.length; i++){
+			for (var j = 0; j < this.chunks[i].length; j++){
+				this.shapes[shape_idx].setFill(this.chunks[i][j]);
+				shape_idx++;
+			}
+		}
+
+		this.tilized = true;
 		this.refresh();
 	}
 

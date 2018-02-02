@@ -23,6 +23,7 @@ function setup() {
 
 	upload_button = createFileInput(handleFile);
 	upload_button.style("opacity", "0");
+	upload_button.style("cursor", "pointer")
 	upload_button.position(x - w/2, y - h/2);
 	upload_button.size(w, h);
 	upload_button.show();
@@ -41,12 +42,6 @@ function setup() {
 	transition = false;
 
 	tiling = new Tiling(windowWidth / 2, windowHeight / 2);
-
-	if (h > 700){
-		var h = 700;
-		var w = h * (img.width / img.height);
-		img.resize(w, h);
-	}
 
 	loadData();
 }
@@ -212,6 +207,9 @@ function windowResized(){
 function handleFile(file){
 	loadImage(file.data, function(img){
 		tiling.image = img;
+		var h = 1000;
+		var w = h * (tiling.image.width / tiling.image.height);
+		tiling.image.resize(w, h);
 		tiling.initialize();
 		transition = true;
 		transition_bound = windowHeight;
