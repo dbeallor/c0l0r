@@ -184,7 +184,7 @@ function p5Shape(vertices, graphic){
 			normalizer++;
 		}
 
-		if (floor(this.centroid.x) + 1 < windowWidth){
+		if (floor(this.centroid.x) + 1 < tiling.graphic.width){
 			var pix_idx = 4 * (floor(this.centroid.x) + 1 + floor(this.centroid.y) * tiling.graphic.width);
 			new_fill[0] += tiling.graphic.pixels[pix_idx];
 			new_fill[1] += tiling.graphic.pixels[pix_idx+1];
@@ -192,7 +192,7 @@ function p5Shape(vertices, graphic){
 			normalizer++;
 		}
 
-		if (floor(this.centroid.y) + 1 < windowHeight){
+		if (floor(this.centroid.y) + 1 < tiling.graphic.height){
 			var pix_idx = 4 * (floor(this.centroid.x) + (floor(this.centroid.y) + 1) * tiling.graphic.width);
 			new_fill[0] += tiling.graphic.pixels[pix_idx];
 			new_fill[1] += tiling.graphic.pixels[pix_idx+1];

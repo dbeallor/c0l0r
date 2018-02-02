@@ -14,6 +14,10 @@ function Tiling(x, y){
 		slides[2].imageMode(CENTER);
 		var h = windowHeight * 0.8;
 		var w = h * (this.image.width / this.image.height);
+		if (w > 0.8 * windowWidth){
+			w = 0.8 * windowWidth;
+			h = w * (this.image.height / this.image.width);
+		}
 		slides[2].image(this.graphic, this.pos.x, this.pos.y - windowHeight/28, w, h);
 	}
 
@@ -21,7 +25,6 @@ function Tiling(x, y){
 		this.width = this.image.width;
 		this.height = this.image.height;
 		this.area_threshold = this.image.width * this.image.height / 8000;
-		var d = pixelDensity();
 		this.graphic = createGraphics(this.width, this.height);
 
 		// Start with one rectangular shape with the same dimensions and position as the image to tile

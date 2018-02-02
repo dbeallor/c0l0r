@@ -14,6 +14,8 @@ var transition_bound;
 function setup() {
 	pixelDensity(1);
 
+	start_time = millis();
+
 	var x = windowWidth / 2;
 	var y = windowHeight / 2 + windowHeight / 5.5;
 	var w = windowWidth * .15;
@@ -29,10 +31,10 @@ function setup() {
 
 	upload_button_graphics = new UploadButtonGraphics();
 
-	var d = pixelDensity();
 	slides = [];
 	for (var i = 0; i < 3; i++){
-		slides[i] = createGraphics(d * windowWidth, d * windowHeight);
+		slides[i] = createGraphics(windowWidth, windowHeight);
+		slides[i].pixelDensity(1);
 	}
 	current_slide = 0;
 
@@ -99,6 +101,10 @@ function draw() {
 			backgroundImage(1);
 			var h = windowHeight * 0.8;
 			var w = h * (tiling.image.width / tiling.image.height);
+			if (w > 0.8 * windowWidth){
+				w = 0.8 * windowWidth;
+				h = w * (tiling.image.height / tiling.image.width);
+			}
 			var x = windowWidth / 2;
 			var y = windowHeight / 2;
 			slides[1].imageMode(CENTER);
@@ -131,20 +137,17 @@ function draw() {
 			if (transition_bound <= 0){
 				transition = false;
 				current_slide++;
-				var d = pixelDensity();
-				image(slides[current_slide], 0, 0, windowWidth / d, windowHeight / d);
+				image(slides[current_slide], 0, 0, windowWidth, windowHeight);
 				setTimeout(function() {tiling.tilize();}, 2000);
 			}
 			else {
-				var d = pixelDensity();
-				image(slides[current_slide], 0, transition_bound - windowHeight, windowWidth / d, windowHeight / d);
-				image(slides[current_slide + 1], 0, transition_bound, windowWidth / d, windowHeight / d);
+				image(slides[current_slide], 0, transition_bound - windowHeight, windowWidth, windowHeight);
+				image(slides[current_slide + 1], 0, transition_bound, windowWidth, windowHeight);
 				transition_bound -= 60;
 			}
 		}
 		else {
-			var d = pixelDensity();
-			image(slides[current_slide], 0, 0, windowWidth / d, windowHeight / d);
+			image(slides[current_slide], 0, 0, windowWidth, windowHeight);
 		}
 
 		if (tiling.tilized && current_slide == 1){
@@ -194,10 +197,10 @@ function windowResized(){
 	var h = windowHeight * .15;
 
 	resizeCanvas(windowWidth, windowHeight);
-	var d = pixelDensity();
 	for (var i = 0; i < 2; i++){
 		delete slides[i];
-		slides[i] = createGraphics(d * windowWidth, d * windowHeight);
+		slides[i] = createGraphics(windowWidth, windowHeight);
+		slides[i].pixelDensity(1);
 	}
 
 	upload_button.position(x - w/2, y - h/2);
