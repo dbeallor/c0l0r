@@ -1,6 +1,17 @@
 <html>
 <head>
+  <title>c0l0r.me</title>
   <meta charset="UTF-8">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+  <meta property="og:url" content="http://c0l0r.me" />
+  <meta property="og:site_name" content="c0l0r.me"/>
+  <meta property="og:title" content="c0l0r.me"/>
+  <meta property="og:description" content="Turn any image into a color by numbers"/>
+  <meta property="og:type" content="website">
+  <meta property="fb:app_id" content="1291568704278418">
+  <meta property="og:image" content="http://dbeallor.github.io/c0l0r/preview.png">
+
   <script language="javascript" type="text/javascript" src="libraries/p5.js"></script>
   <!-- uncomment lines below to include extra p5 libraries -->
   <script language="javascript" src="libraries/p5.dom.js"></script>
@@ -13,6 +24,15 @@
   <style> body {padding: 0; margin: 0;} </style>
 </head>
 
-<body>
+<body oncontextmenu="return false">
+  <div id="fb-root"></div>
+
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.11&appId=1291568704278418';
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
 </body>
 </html>

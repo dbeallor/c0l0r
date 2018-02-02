@@ -115,7 +115,7 @@ function draw() {
 			slides[1].textAlign(CENTER, CENTER);
 			slides[1].textFont(myFont);
 			slides[1].textSize(30);
-			slides[1].text("Creating your custom color by numbers...", windowWidth / 2, windowHeight - windowHeight / 10);
+			slides[1].text("Drawing your custom color by numbers...", windowWidth / 2, windowHeight - windowHeight / 10);
 			slides[1].textSize(20);
 			slides[1].text("(this may take a minute or two)", windowWidth / 2, windowHeight - windowHeight / 20);
 			slides[1].pop();
@@ -184,7 +184,7 @@ function backgroundImage(i){
 		h = w * (1/ratio);
 		slides[current_slide].image(background_image, windowWidth / 2, windowHeight / 2, w, h);
 	}
-	slides[i].fill(0, 150);
+	slides[i].fill(0, 100);
 	slides[i].rect(0, 0, windowWidth, windowHeight);
 	slides[i].resetMatrix();
 }
