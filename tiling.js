@@ -1,44 +1,55 @@
-function Tiling(img, x, y, w, h){
-	this.image = img;
-	this.pos = createVector(x, y);
-	this.width = w;
-	this.height = h;
-	this.area_threshold = 5;
-	this.breadth_threshold = 20;
+function Tiling(x, y){
 	this.display_mode = 1;
-
-	var d = pixelDensity();
-	this.graphic = createGraphics(this.width, this.height);
-
-	// Start with one rectangular shape with the same dimensions and position as the image to tile
-	var v1 = createVector(0, 0);
-	var v2 = createVector(this.width, 0);
-	var v3 = createVector(this.width, this.height);
-	var v4 = createVector(0, this.height);
-	this.shapes = [new p5Shape([v1, v2, v3, v4], this.graphic)];
+	this.tilized = false;
+	this.pos = createVector(x, y);
+	this.width;
+	this.height;
+	this.image;
+	this.area_threshold;
+	this.graphic;
+	this.shapes;
 
 	this.show = function(){
-		resetMatrix();
-		imageMode(CENTER);
+		slides[2].resetMatrix();
+		slides[2].imageMode(CENTER);
 		var h = windowHeight * 0.8;
-		var w = h * (img.width / img.height);
-		image(this.graphic, this.pos.x, this.pos.y, w, h);
+		var w = h * (this.image.width / this.image.height);
+		slides[2].image(this.graphic, this.pos.x, this.pos.y - windowHeight/28, w, h);
+	}
+
+	this.initialize = function(){
+		this.width = this.image.width;
+		this.height = this.image.height;
+		this.area_threshold = this.image.width * this.image.height / 8000;
+		var d = pixelDensity();
+		this.graphic = createGraphics(this.width, this.height);
+
+		// Start with one rectangular shape with the same dimensions and position as the image to tile
+		var v1 = createVector(0, 0);
+		var v2 = createVector(this.width, 0);
+		var v3 = createVector(this.width, this.height);
+		var v4 = createVector(0, this.height);
+		this.shapes = [new p5Shape([v1, v2, v3, v4], this.graphic)];
 	}
 
 	this.tilize = function(){
 		var divisions;
 		var fail_counter = 0;
 		var dir = 0;
+		this.graphic.image(this.image, 0, 0);
 		while (fail_counter < 3){
 			divisions = this.subdivide(dir);
 			dir = (dir + 1) % 2;
-			if (divisions > 3)
+			print(divisions);
+			if (divisions > 0)
 				fail_counter = 0;
 			else
 				fail_counter++;
 		}
+		// print(this.shapes.length);
 		this.setColors();
-		this.refresh();
+		this.tilized = true;
+
 	}
 
 	this.subdivide = function(dir){

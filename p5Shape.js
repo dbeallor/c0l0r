@@ -1,6 +1,6 @@
-function p5Shape(vertices, graphics){
+function p5Shape(vertices, graphic){
 	this.vertices = vertices;
-	this.graphics = graphics;
+	this.graphic = graphic;
 	this.fill = 255;
 	this.id = 'A1';
 
@@ -12,32 +12,32 @@ function p5Shape(vertices, graphics){
 	this.centroid = createVector(average.x, average.y);
 
 	this.show = function(mode){
-		this.graphics.push();
+		this.graphic.push();
 			if (mode == 1){
-				this.graphics.fill(this.fill);
-				this.graphics.stroke(this.fill);
+				this.graphic.fill(this.fill);
+				this.graphic.stroke(this.fill);
 			}
 			else {
-				this.graphics.fill(255);
-				this.graphics.stroke(230);
-				this.graphics.strokeWeight(0.5);
+				this.graphic.fill(255);
+				this.graphic.stroke(230);
+				this.graphic.strokeWeight(0.5);
 			}
-			// this.graphics.noStroke();
-			this.graphics.beginShape();
+			// this.graphic.noStroke();
+			this.graphic.beginShape();
 			for (var i = 0; i < this.vertices.length; i++){
-				this.graphics.vertex(this.vertices[i].x, this.vertices[i].y);
+				this.graphic.vertex(this.vertices[i].x, this.vertices[i].y);
 			}
-			this.graphics.endShape(CLOSE);
+			this.graphic.endShape(CLOSE);
 		
 			if (mode == 0){
-				this.graphics.fill(230);
-				this.graphics.textSize(8);
-				this.graphics.textFont("Courier New");
-				this.graphics.noStroke();
-				this.graphics.textAlign(CENTER, CENTER);
-				this.graphics.text(this.id, this.centroid.x, this.centroid.y);
+				this.graphic.fill(230);
+				this.graphic.textSize(8);
+				this.graphic.textFont("Courier New");
+				this.graphic.noStroke();
+				this.graphic.textAlign(CENTER, CENTER);
+				this.graphic.text(this.id, this.centroid.x, this.centroid.y);
 			}
-		this.graphics.pop();
+		this.graphic.pop();
 	}
 
 	this.area = function(){
@@ -74,21 +74,22 @@ function p5Shape(vertices, graphics){
 
 		var rand;
 
-		rand = Math.random() * 0.5 + 0.25;
+		var rand_factor = 0.2;
+		rand = Math.random() * rand_factor + 0.5 - rand_factor / 2;
 		var mag1 = vec1.mag();
 		var mid1 = start1.add(vec1.mult(1.0 / mag1).mult(rand).mult(mag1));
 
-		rand = Math.random() * 0.5 + 0.25;
+		rand = Math.random() * rand_factor + 0.5 - rand_factor / 2;
 		var mag2 = vec2.mag();
 		var mid2 = start2.add(vec2.mult(1.0 / mag2).mult(rand).mult(mag2));
 
 		if (dir == 0){
-			new_shapes = append(new_shapes, new p5Shape([v1, mid1, mid2, v4], this.graphics));
-			new_shapes = append(new_shapes, new p5Shape([mid1, v2, v3, mid2], this.graphics));
+			new_shapes = append(new_shapes, new p5Shape([v1, mid1, mid2, v4], this.graphic));
+			new_shapes = append(new_shapes, new p5Shape([mid1, v2, v3, mid2], this.graphic));
 		}
 		else{
-			new_shapes = append(new_shapes, new p5Shape([v1, v2, mid2, mid1], this.graphics));
-			new_shapes = append(new_shapes, new p5Shape([mid1, mid2, v3, v4], this.graphics));
+			new_shapes = append(new_shapes, new p5Shape([v1, v2, mid2, mid1], this.graphic));
+			new_shapes = append(new_shapes, new p5Shape([mid1, mid2, v3, v4], this.graphic));
 		}
 
 		return new_shapes;
@@ -107,23 +108,20 @@ function p5Shape(vertices, graphics){
 	// }
 
 	this.wellProportioned = function(){
-		// print(this.vertices)
-		var diag1 = createVector(this.vertices[0].x - this.vertices[2].x, this.vertices[0].y - this.vertices[2].y);
-		var diag2 = createVector(this.vertices[1].x - this.vertices[3].x, this.vertices[1].y - this.vertices[3].y); 
+		var v1 = createVector(this.vertices[1].x - this.vertices[0].x, this.vertices[1].y - this.vertices[0].y);
+		var v2 = createVector(this.vertices[2].x - this.vertices[1].x, this.vertices[2].y - this.vertices[1].y);
+		var v3 = createVector(this.vertices[3].x - this.vertices[2].x, this.vertices[3].y - this.vertices[2].y);
+		var v4 = createVector(this.vertices[0].x - this.vertices[3].x, this.vertices[0].y - this.vertices[3].y);
 
-		if (diag1.mag() / diag2.mag() < 0.5 || diag1.mag() / diag2.mag() > 2)
+		if (v1.mag() / v2.mag() < 0.25 || v1.mag() / v2.mag() > 4){
+			// print(v1.mag() / v2.mag())
 			return false;
+		}
 
-		var angle = angleBetween(diag1, diag2);
-		// print(angle)
-		if (angle < Math.PI / 4)
+		if (v3.mag() / v4.mag() < 0.25 || v3.mag() / v4.mag() > 4){
+			// print(v1.mag() / v2.mag())
 			return false;
-
-		if (angle > 3 * Math.PI / 4 && angle < 5 * Math.PI / 4)
-			return false;
-
-		if (angle > 7 * Math.PI / 4)
-			return false;
+		}
 
 		return true;
 	}
@@ -154,7 +152,7 @@ function p5Shape(vertices, graphics){
 
 	this.setFill = function(){
 		var new_fill = [0, 0, 0];
-		img.loadPixels();
+		tiling.graphic.loadPixels();
 		// var r = 1;
 		// for (var i = -r; i < r; i++){
 		// 	for (var j = -r; j < r; j++){
@@ -171,35 +169,35 @@ function p5Shape(vertices, graphics){
 
 		var normalizer = 0;
 		if (floor(this.centroid.x) - 1 > 0){
-			var pix_idx = 4 * (floor(this.centroid.x) - 1 + floor(this.centroid.y) * img.width);
-			new_fill[0] += img.pixels[pix_idx];
-			new_fill[1] += img.pixels[pix_idx+1];
-			new_fill[2] += img.pixels[pix_idx+2];
-			normalizer++
+			var pix_idx = 4 * (floor(this.centroid.x) - 1 + floor(this.centroid.y) * tiling.graphic.width);
+			new_fill[0] += tiling.graphic.pixels[pix_idx];
+			new_fill[1] += tiling.graphic.pixels[pix_idx+1];
+			new_fill[2] += tiling.graphic.pixels[pix_idx+2];
+			normalizer++;
 		}
 
 		if (floor(this.centroid.y) - 1 > 0){
-			var pix_idx = 4 * (floor(this.centroid.x) + (floor(this.centroid.y) - 1) * img.width);
-			new_fill[0] += img.pixels[pix_idx];
-			new_fill[1] += img.pixels[pix_idx+1];
-			new_fill[2] += img.pixels[pix_idx+2];
-			normalizer++
+			var pix_idx = 4 * (floor(this.centroid.x) + (floor(this.centroid.y) - 1) * tiling.graphic.width);
+			new_fill[0] += tiling.graphic.pixels[pix_idx];
+			new_fill[1] += tiling.graphic.pixels[pix_idx+1];
+			new_fill[2] += tiling.graphic.pixels[pix_idx+2];
+			normalizer++;
 		}
 
 		if (floor(this.centroid.x) + 1 < windowWidth){
-			var pix_idx = 4 * (floor(this.centroid.x) + 1 + floor(this.centroid.y) * img.width);
-			new_fill[0] += img.pixels[pix_idx];
-			new_fill[1] += img.pixels[pix_idx+1];
-			new_fill[2] += img.pixels[pix_idx+2];
-			normalizer++
+			var pix_idx = 4 * (floor(this.centroid.x) + 1 + floor(this.centroid.y) * tiling.graphic.width);
+			new_fill[0] += tiling.graphic.pixels[pix_idx];
+			new_fill[1] += tiling.graphic.pixels[pix_idx+1];
+			new_fill[2] += tiling.graphic.pixels[pix_idx+2];
+			normalizer++;
 		}
 
 		if (floor(this.centroid.y) + 1 < windowHeight){
-			var pix_idx = 4 * (floor(this.centroid.x) + (floor(this.centroid.y) + 1) * img.width);
-			new_fill[0] += img.pixels[pix_idx];
-			new_fill[1] += img.pixels[pix_idx+1];
-			new_fill[2] += img.pixels[pix_idx+2];
-			normalizer++
+			var pix_idx = 4 * (floor(this.centroid.x) + (floor(this.centroid.y) + 1) * tiling.graphic.width);
+			new_fill[0] += tiling.graphic.pixels[pix_idx];
+			new_fill[1] += tiling.graphic.pixels[pix_idx+1];
+			new_fill[2] += tiling.graphic.pixels[pix_idx+2];
+			normalizer++;
 		}
 
 		new_fill[0] = constrain(new_fill[0] * (1/normalizer), 0, 255);
@@ -208,6 +206,7 @@ function p5Shape(vertices, graphics){
 		
 		// print(new_fill)
 		var closest_color = this.closestColorTo(color(new_fill));
+		// var closest_color = {color: color(new_fill), id: 'Z9'};
 		this.id = closest_color.id;
 		this.fill = closest_color.color;
 	}
@@ -234,18 +233,49 @@ function p5Shape(vertices, graphics){
 		// -------------------------
 		// c1._getBrightness();
 		// c2._getBrightness();
-		// diff += pow(map(c1.hsba[0], 0, 360, 0, 1) - map(c2.hsba[0], 0, 360, 0, 1), 2);
-		// diff += pow(map(c1.hsba[1], 0, 100, 0, 1) - map(c2.hsba[1], 0, 100, 0, 1), 2);
-		// diff += pow(map(c1.hsba[2], 0, 100, 0, 1) - map(c2.hsba[2], 0, 100, 0, 1), 2);
+		// diff += pow(10.0 * (map(c1.hsba[0], 0, 360, 0, 1) - map(c2.hsba[0], 0, 360, 0, 1)), 2);
+		// diff += pow(0.25 * (map(c1.hsba[1], 0, 100, 0, 1) - map(c2.hsba[1], 0, 100, 0, 1)), 2);
+		// diff += pow(10.0 * (map(c1.hsba[2], 0, 100, 0, 1) - map(c2.hsba[2], 0, 100, 0, 1)), 2);
 
-		// -------------------------
-		// RGB COLOR DISTANCE
-		// -------------------------
-		diff += pow(c1.levels[0] - c2.levels[0], 2);
-		diff += pow(c1.levels[1] - c2.levels[1], 2);
-		diff += pow(c1.levels[2] - c2.levels[2], 2);
+		// // -------------------------
+		// // RGB COLOR DISTANCE
+		// // -------------------------
+		// diff += 2 * pow(c1.levels[0] - c2.levels[0], 2);
+		// diff += 4 * pow(c1.levels[1] - c2.levels[1], 2);
+		// diff += 3 * pow(c1.levels[2] - c2.levels[2], 2);
 
-		return pow(diff, 1/2);
+		// // -------------------------
+		// // LAB COLOR DISTANCE
+		// // -------------------------
+		var c1_levels = rgb2lab(c1.levels);
+		var c2_levels = rgb2lab(c2.levels);
+		diff += pow(c1_levels[0] - c2_levels[0], 2);
+		diff += pow(c1_levels[1] - c2_levels[1], 2);
+		diff += pow(c1_levels[2] - c2_levels[2], 2);
+
+		// return pow(diff, 1/2);
+		return diff;
+	}
+
+	function rgb2lab(rgb){
+		var r = rgb[0] / 255,
+		g = rgb[1] / 255,
+		b = rgb[2] / 255,
+		x, y, z;
+
+		r = (r > 0.04045) ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+		g = (g > 0.04045) ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+		b = (b > 0.04045) ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+		x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+		y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+		z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+
+		x = (x > 0.008856) ? Math.pow(x, 1/3) : (7.787 * x) + 16/116;
+		y = (y > 0.008856) ? Math.pow(y, 1/3) : (7.787 * y) + 16/116;
+		z = (z > 0.008856) ? Math.pow(z, 1/3) : (7.787 * z) + 16/116;
+
+		return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
 	}
 }
 
