@@ -24,7 +24,7 @@ function Tiling(x, y){
 	this.initialize = function(){
 		this.width = this.image.width;
 		this.height = this.image.height;
-		this.area_threshold = this.image.width * this.image.height / 8000;
+		this.area_threshold = this.image.width * this.image.height / 10000;
 		this.graphic = createGraphics(this.width, this.height);
 
 		// Start with one rectangular shape with the same dimensions and position as the image to tile

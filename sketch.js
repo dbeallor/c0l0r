@@ -42,9 +42,11 @@ function setup() {
 
 	tiling = new Tiling(windowWidth / 2, windowHeight / 2);
 
-	// var h = 700;
-	// var w = h * (img.width / img.height);
-	// img.resize(w, h);
+	if (h > 700){
+		var h = 700;
+		var w = h * (img.width / img.height);
+		img.resize(w, h);
+	}
 
 	loadData();
 }
