@@ -11,10 +11,6 @@ var current_slide;
 var transition;
 var transition_bound;
 
-function preload(){
-	color_data = loadStrings('crayola_colors.txt');	
-}
-
 function setup() {
 	pixelDensity(1);
 
@@ -155,6 +151,8 @@ function draw() {
 			current_slide++;
 		}
 	}
+	else
+		background(0);
 
 	
 
@@ -204,11 +202,6 @@ function windowResized(){
 
 	upload_button.position(x - w/2, y - h/2);
 	upload_button.size(w, h);
-}
-
-function withinBounds(x, y, bounds){
-	return (x >= bounds[0] && x <= bounds[1] && y >= bounds[2] && y <= bounds[3]);
-	// 			left             right           bottom             top
 }
 
 function handleFile(file){
