@@ -19,7 +19,7 @@ function p5Shape(vertices, graphic){
 			}
 			else {
 				this.graphic.fill(255);
-				this.graphic.stroke(230);
+				this.graphic.stroke(180);
 				this.graphic.strokeWeight(0.5);
 			}
 			// this.graphic.noStroke();
@@ -30,8 +30,8 @@ function p5Shape(vertices, graphic){
 			this.graphic.endShape(CLOSE);
 		
 			if (mode == 0){
-				this.graphic.fill(230);
-				this.graphic.textSize(8);
+				this.graphic.fill(180);
+				this.graphic.textSize(20);
 				this.graphic.textFont("Courier New");
 				this.graphic.noStroke();
 				this.graphic.textAlign(CENTER, CENTER);
@@ -103,6 +103,16 @@ function p5Shape(vertices, graphic){
 		}
 
 		if (v3.mag() / v4.mag() < 0.25 || v3.mag() / v4.mag() > 4){
+			// print(v1.mag() / v2.mag())
+			return false;
+		}
+
+		if (v3.mag() / v2.mag() < 0.25 || v3.mag() / v2.mag() > 4){
+			// print(v1.mag() / v2.mag())
+			return false;
+		}
+
+		if (v1.mag() / v4.mag() < 0.25 || v1.mag() / v4.mag() > 4){
 			// print(v1.mag() / v2.mag())
 			return false;
 		}

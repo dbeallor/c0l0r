@@ -11,6 +11,10 @@ function Tiling(x, y){
 	this.workers = [];
 	this.chunks = [];
 
+	// 8.5 X 11 ratio graphic for printing
+	this.print_graphics = createGraphics(1200 * (11 / 8.5), 1200);
+	this.print_graphics.pixelDensity(1);
+
 	this.show = function(){
 		slides[2].resetMatrix();
 		slides[2].imageMode(CENTER);
@@ -26,7 +30,7 @@ function Tiling(x, y){
 	this.initialize = function(){
 		this.width = this.image.width;
 		this.height = this.image.height;
-		this.area_threshold = this.image.width * this.image.height / 15000;
+		this.area_threshold = this.image.width * this.image.height / 9000;
 		this.graphic = createGraphics(this.width, this.height);
 
 		for (var i = 0; i < navigator.hardwareConcurrency; i++){
@@ -156,4 +160,29 @@ function Tiling(x, y){
 		this.refresh();
 	}
 
+	this.save = function(){
+		this.graphic.clear();
+		for (var i = 0; i < this.shapes.length; i++)
+			this.shapes[i].show(0);
+
+		this.print_graphics.background(255);
+		this.print_graphics.imageMode(CENTER);
+		this.print_graphics.translate(this.print_graphics.width / 2, this.print_graphics.height / 2);
+		var h = this.print_graphics.height * 0.97;
+		var w = h * (this.graphic.width / this.graphic.height);
+		if (w > 0.97 * this.print_graphics.width){
+			w = 0.97 * this.print_graphics.width;
+			h = w * (this.graphic.height / this.graphic.width);
+		}
+		this.print_graphics.image(this.graphic, 0, 0, w, h);
+		saveCanvas(this.print_graphics, 'c0l0rMeIn', 'jpg');
+
+		this.graphic.clear();
+		for (var i = 0; i < this.shapes.length; i++)
+			this.shapes[i].show(1);
+	}
+
+	this.position = function(x, y){
+		this.pos.set(x, y);
+	}
 }

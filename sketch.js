@@ -10,6 +10,8 @@ var slides;
 var current_slide;
 var transition;
 var transition_bound;
+var save_button;
+var restart_button;
 
 function setup() {
 	pixelDensity(1);
@@ -31,6 +33,8 @@ function setup() {
 	canv = createCanvas(windowWidth, windowHeight);
 
 	upload_button_graphics = new UploadButtonGraphics();
+	save_button = new SaveButton();
+	restart_button = new RestartButton();
 
 	slides = [];
 	for (var i = 0; i < 3; i++){
@@ -93,8 +97,8 @@ function draw() {
 		}
 
 		if (current_slide == 1 || (current_slide == 0 && transition)){
+			canvas.style.cursor = 'wait';
 			slides[1].push();
-			slides[1].background(0);
 			backgroundImage(1);
 			var h = windowHeight * 0.8;
 			var w = h * (tiling.image.width / tiling.image.height);
@@ -119,15 +123,13 @@ function draw() {
 		}
 
 		if (current_slide == 2){
-			if (!tiling.tilized)
-				canvas.style.cursor = 'wait';
-			else
-				canvas.style.cursor = 'auto';
+			canvas.style.cursor = 'auto';
 			slides[2].push();
-			slides[2].background(0);
-			backgroundImage(2);
-			tiling.show();
+				backgroundImage(2);
+				tiling.show();
 			slides[2].pop();
+			save_button.show();
+			restart_button.show();
 		}
 
 		if (transition){
@@ -187,27 +189,33 @@ function backgroundImage(i){
 	slides[i].resetMatrix();
 }
 
-function windowResized(){
-	var x = windowWidth / 2;
-	var y = windowHeight / 2 + windowHeight / 5.5;
-	var w = windowWidth * .15;
-	var h = windowHeight * .15;
+function mousePressed(){
+	save_button.onClick();
+	restart_button.onClick();
+}
 
+function windowResized(){
 	resizeCanvas(windowWidth, windowHeight);
-	for (var i = 0; i < 2; i++){
+	for (var i = 0; i < 3; i++){
 		delete slides[i];
 		slides[i] = createGraphics(windowWidth, windowHeight);
 		slides[i].pixelDensity(1);
 	}
 
+	var x = windowWidth / 2;
+	var y = windowHeight / 2 + windowHeight / 5.5;
+	var w = windowWidth * .15;
+	var h = windowHeight * .15;
 	upload_button.position(x - w/2, y - h/2);
 	upload_button.size(w, h);
+
+	tiling.position(windowWidth / 2, windowHeight / 2);
 }
 
 function handleFile(file){
 	loadImage(file.data, function(img){
 		tiling.image = img;
-		var h = 1000;
+		var h = 2000;
 		var w = h * (tiling.image.width / tiling.image.height);
 		tiling.image.resize(w, h);
 		tiling.initialize();
@@ -225,14 +233,8 @@ function UploadButtonGraphics(){
 		var w = windowWidth * .15;
 		var h = windowHeight * .15;
 		slides[0].push();
-			if (this.mouseOver()){
-				slides[0].fill(184,225,255);
-				canvas.style.cursor = 'pointer';
-			}
-			else{
-				slides[0].fill(255);
-				canvas.style.cursor = 'auto';
-			}
+			canvas.style.cursor = this.mouseOver() ? 'pointer' : 'auto';
+			slides[0].fill(this.mouseOver() ? [184, 225, 255] : 255);
 			slides[0].noStroke();
 			slides[0].rectMode(CENTER);
 			slides[0].rect(x, y, w, h, 20);
@@ -253,8 +255,86 @@ function UploadButtonGraphics(){
 		var x = windowWidth / 2;
 		var y = windowHeight / 2 + windowHeight / 5.5;
 		var w = windowWidth * .15;
-		var h = windowHeight * .15;
+		var h = windowHeight * .15;	
 		return [x - w / 2, x + w / 2, y - h / 2, y + h / 2];
+	}
+}
+
+function SaveButton(){
+	this.show = function(){
+		var x = windowWidth / 2 - windowWidth / 11;
+		var y = windowHeight - windowHeight / 13;
+		var w = windowWidth * .2;
+		var h = windowHeight * .065;
+
+		slides[2].push();
+			this.mouseOver() ? canvas.style.cursor = 'pointer' : null;
+			slides[2].fill(this.mouseOver() ? [184, 225, 255] : 255);
+			slides[2].textFont(myFont);
+			slides[2].noStroke();
+			slides[2].rectMode(CENTER);
+			slides[2].rect(x, y, w, h, 10);
+			slides[2].textSize(windowWidth < 1100 ? 16 : 20);
+			slides[2].textAlign(CENTER, CENTER);
+			slides[2].fill(100);
+			slides[2].text("Save Printable Version", x, y - 3);
+		slides[2].pop();
+	}
+
+	this.mouseOver = function(){
+		return (withinBounds(mouseX, mouseY, this.bounds()));
+	}
+
+	this.bounds = function(){
+		var x = windowWidth / 2 - windowWidth / 11;
+		var y = windowHeight - windowHeight / 13;
+		var w = windowWidth * .2;
+		var h = windowHeight * .065;
+		return [x - w / 2, x + w / 2, y - h / 2, y + h / 2];
+	}
+
+	this.onClick = function(){
+		if (this.mouseOver() && current_slide == 2)
+			tiling.save();
+	}
+}
+
+function RestartButton(){
+	this.show = function(){
+		var x = windowWidth / 2 + windowWidth / 8;
+		var y = windowHeight - windowHeight / 13;
+		var w = windowWidth * .12;
+		var h = windowHeight * .065;
+
+		slides[2].push();
+			this.mouseOver() ? canvas.style.cursor = 'pointer' : null;
+			slides[2].fill(this.mouseOver() ? [184, 225, 255] : 255);
+			slides[2].textFont(myFont);
+			slides[2].noStroke();
+			slides[2].rectMode(CENTER);
+			slides[2].rect(x, y, w, h, 10);
+			slides[2].textSize(windowWidth < 1100 ? 16 : 20);
+			slides[2].textAlign(CENTER, CENTER);
+			slides[2].fill(100);
+			slides[2].text("Start Over", x, y - 3);
+		slides[2].pop();
+	}
+
+	this.mouseOver = function(){
+		return (withinBounds(mouseX, mouseY, this.bounds()));
+	}
+
+	this.bounds = function(){
+		var x = windowWidth / 2 + windowWidth / 8;
+		var y = windowHeight - windowHeight / 13;
+		var w = windowWidth * .12;
+		var h = windowHeight * .065;
+		return [x - w / 2, x + w / 2, y - h / 2, y + h / 2];
+	}
+
+	this.onClick = function(){
+		if (this.mouseOver() && current_slide == 2)
+			window.location.href = 'http://c0l0r.me';
 	}
 }
 
