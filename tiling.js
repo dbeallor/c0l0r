@@ -30,7 +30,7 @@ function Tiling(x, y){
 	this.initialize = function(){
 		this.width = this.image.width;
 		this.height = this.image.height;
-		this.area_threshold = this.image.width * this.image.height / 9000;
+		this.area_threshold = this.image.width * this.image.height / 10000;
 		this.graphic = createGraphics(this.width, this.height);
 
 		for (var i = 0; i < navigator.hardwareConcurrency; i++){
@@ -175,7 +175,7 @@ function Tiling(x, y){
 			h = w * (this.graphic.height / this.graphic.width);
 		}
 		this.print_graphics.image(this.graphic, 0, 0, w, h);
-		saveCanvas(this.print_graphics, 'c0l0rMeIn', 'jpg');
+		saveCanvas(this.print_graphics, 'c0l0rme', 'jpg');
 
 		this.graphic.clear();
 		for (var i = 0; i < this.shapes.length; i++)

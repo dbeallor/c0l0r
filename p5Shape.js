@@ -31,7 +31,7 @@ function p5Shape(vertices, graphic){
 		
 			if (mode == 0){
 				this.graphic.fill(180);
-				this.graphic.textSize(20);
+				this.graphic.textSize(18);
 				this.graphic.textFont("Courier New");
 				this.graphic.noStroke();
 				this.graphic.textAlign(CENTER, CENTER);
@@ -97,22 +97,22 @@ function p5Shape(vertices, graphic){
 		var v3 = createVector(this.vertices[3].x - this.vertices[2].x, this.vertices[3].y - this.vertices[2].y);
 		var v4 = createVector(this.vertices[0].x - this.vertices[3].x, this.vertices[0].y - this.vertices[3].y);
 
-		if (v1.mag() / v2.mag() < 0.25 || v1.mag() / v2.mag() > 4){
+		if (v1.mag() / v2.mag() < 0.33 || v1.mag() / v2.mag() > 3){
 			// print(v1.mag() / v2.mag())
 			return false;
 		}
 
-		if (v3.mag() / v4.mag() < 0.25 || v3.mag() / v4.mag() > 4){
+		if (v3.mag() / v4.mag() < 0.33 || v3.mag() / v4.mag() > 3){
 			// print(v1.mag() / v2.mag())
 			return false;
 		}
 
-		if (v3.mag() / v2.mag() < 0.25 || v3.mag() / v2.mag() > 4){
+		if (v3.mag() / v2.mag() < 0.33 || v3.mag() / v2.mag() > 3){
 			// print(v1.mag() / v2.mag())
 			return false;
 		}
 
-		if (v1.mag() / v4.mag() < 0.25 || v1.mag() / v4.mag() > 4){
+		if (v1.mag() / v4.mag() < 0.33 || v1.mag() / v4.mag() > 3){
 			// print(v1.mag() / v2.mag())
 			return false;
 		}

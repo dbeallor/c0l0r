@@ -12,6 +12,7 @@ var transition;
 var transition_bound;
 var save_button;
 var restart_button;
+var color_map_button;
 
 function setup() {
 	pixelDensity(1);
@@ -35,6 +36,7 @@ function setup() {
 	upload_button_graphics = new UploadButtonGraphics();
 	save_button = new SaveButton();
 	restart_button = new RestartButton();
+	color_map_button = new ColorMapButton();
 
 	slides = [];
 	for (var i = 0; i < 3; i++){
@@ -71,7 +73,6 @@ function doneLoading(){
 		var info = split(color_data[i], ',');
 		colors[i] = {color: color(info[1]), id: alphabet[floor(i / 10)] + (i % 10), label: info[0]};
 	}
-
 	finished_loading = true;
 }
 
@@ -130,6 +131,7 @@ function draw() {
 			slides[2].pop();
 			save_button.show();
 			restart_button.show();
+			color_map_button.show();
 		}
 
 		if (transition){
@@ -165,6 +167,7 @@ function draw() {
 }
 
 function backgroundImage(i){
+	slides[i].resetMatrix();
 	slides[i].clear();
 	if (i >= 1){
 		slides[i].translate(windowWidth / 2, windowHeight / 2);
@@ -192,6 +195,7 @@ function backgroundImage(i){
 function mousePressed(){
 	save_button.onClick();
 	restart_button.onClick();
+	color_map_button.onClick();
 }
 
 function windowResized(){
@@ -262,7 +266,7 @@ function UploadButtonGraphics(){
 
 function SaveButton(){
 	this.show = function(){
-		var x = windowWidth / 2 - windowWidth / 11;
+		var x = windowWidth / 2 - windowWidth / 6;
 		var y = windowHeight - windowHeight / 13;
 		var w = windowWidth * .2;
 		var h = windowHeight * .065;
@@ -274,10 +278,10 @@ function SaveButton(){
 			slides[2].noStroke();
 			slides[2].rectMode(CENTER);
 			slides[2].rect(x, y, w, h, 10);
-			slides[2].textSize(windowWidth < 1100 ? 16 : 20);
+			slides[2].textSize(windowWidth < 1200 ? 16 : 20);
 			slides[2].textAlign(CENTER, CENTER);
 			slides[2].fill(100);
-			slides[2].text("Save Printable Version", x, y - 3);
+			slides[2].text("Download Colorable Version", x, y - 3);
 		slides[2].pop();
 	}
 
@@ -286,7 +290,7 @@ function SaveButton(){
 	}
 
 	this.bounds = function(){
-		var x = windowWidth / 2 - windowWidth / 11;
+		var x = windowWidth / 2 - windowWidth / 6;
 		var y = windowHeight - windowHeight / 13;
 		var w = windowWidth * .2;
 		var h = windowHeight * .065;
@@ -301,7 +305,7 @@ function SaveButton(){
 
 function RestartButton(){
 	this.show = function(){
-		var x = windowWidth / 2 + windowWidth / 8;
+		var x = windowWidth / 2 + windowWidth / 35;
 		var y = windowHeight - windowHeight / 13;
 		var w = windowWidth * .12;
 		var h = windowHeight * .065;
@@ -313,7 +317,7 @@ function RestartButton(){
 			slides[2].noStroke();
 			slides[2].rectMode(CENTER);
 			slides[2].rect(x, y, w, h, 10);
-			slides[2].textSize(windowWidth < 1100 ? 16 : 20);
+			slides[2].textSize(windowWidth < 1200 ? 16 : 20);
 			slides[2].textAlign(CENTER, CENTER);
 			slides[2].fill(100);
 			slides[2].text("Start Over", x, y - 3);
@@ -325,7 +329,7 @@ function RestartButton(){
 	}
 
 	this.bounds = function(){
-		var x = windowWidth / 2 + windowWidth / 8;
+		var x = windowWidth / 2 + windowWidth / 35;
 		var y = windowHeight - windowHeight / 13;
 		var w = windowWidth * .12;
 		var h = windowHeight * .065;
@@ -335,6 +339,81 @@ function RestartButton(){
 	this.onClick = function(){
 		if (this.mouseOver() && current_slide == 2)
 			window.location.href = 'http://c0l0r.me';
+	}
+}
+
+function ColorMapButton(){
+	this.graphics = createGraphics(1200 * (11 / 8.5), 1200);
+	this.graphics.pixelDensity(1);
+	this.initialized = false;
+
+	this.show = function(){
+		var x = windowWidth / 2 + windowWidth / 5;
+		var y = windowHeight - windowHeight / 13;
+		var w = windowWidth * .14;
+		var h = windowHeight * .065;
+
+		slides[2].push();
+			this.mouseOver() ? canvas.style.cursor = 'pointer' : null;
+			slides[2].fill(this.mouseOver() ? [184, 225, 255] : 255);
+			slides[2].textFont(myFont);
+			slides[2].noStroke();
+			slides[2].rectMode(CENTER);
+			slides[2].rect(x, y, w, h, 10);
+			slides[2].textSize(windowWidth < 1200 ? 16 : 20);
+			slides[2].textAlign(CENTER, CENTER);
+			slides[2].fill(100);
+			slides[2].text("Printable Color Map", x, y - 3);
+		slides[2].pop();
+	}
+
+	this.initialize = function(){
+		var g = this.graphics;
+		var h = g.height * 0.9;
+		var w = 100;
+
+		var columns = 4;
+		var rect_height = h / ceil(colors.length / columns);
+		// print(colors)
+		g.push();
+		g.background(255);
+		for (var j = 0; j < columns; j++){
+			for (var i = 0; i < ceil(colors.length / columns); i++){
+				if (typeof(colors[i + j * ceil(colors.length / columns)]) != 'undefined'){
+					g.fill(colors[i + j * ceil(colors.length / columns)].color.levels);
+					g.noStroke();
+					g.rect(g.width / 2 + (j-1.5) * g.width / 4 - 20, g.height / 2 - h / 2 + i * rect_height, w, rect_height);
+					g.fill(0);
+					g.textFont("Courier New");
+					g.textSize(18);
+					g.textAlign(LEFT, CENTER);
+					g.text(colors[i + j * ceil(colors.length / columns)].id, g.width / 2 + (j-1.5) * g.width / 4 - 60, g.height / 2 - h / 2 + i * rect_height + 13);
+				}
+			}
+		}
+		g.pop();
+
+		this.initialized = true;
+	}
+
+	this.onClick = function(){
+		if (this.mouseOver() && current_slide == 2){
+			if (!this.initialized)
+				this.initialize();
+			saveCanvas(this.graphics, "c0l0rmap", 'jpg');
+		}
+	}
+
+	this.mouseOver = function(){
+		return (withinBounds(mouseX, mouseY, this.bounds()));
+	}
+
+	this.bounds = function(){
+		var x = windowWidth / 2 + windowWidth / 5;
+		var y = windowHeight - windowHeight / 13;
+		var w = windowWidth * .14;
+		var h = windowHeight * .065;
+		return [x - w / 2, x + w / 2, y - h / 2, y + h / 2];
 	}
 }
 
